@@ -57,6 +57,8 @@
                     android:src="@drawable/like"
                     />
             </LinearLayout>
+
+
         </RelativeLayout>
 
         <TextView android:id="@+id/comment_item_description"
