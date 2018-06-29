@@ -23,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.laioffer.wequest.EventActivity" />
+        <activity android:name="com.laioffer.wequest.EventActivity" >
+        </activity>
         <activity android:name="com.laioffer.wequest.EventReportActivity" />
         <activity
             android:name="com.laioffer.wequest.CommentActivity"
@@ -43,7 +44,7 @@
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAxxUlO0MICjbf77C_ErSKt3ks2Ko6lIP8" />
+            android:value="AIzaSyDg_-PSNyDGlGQd6Z-zSpK-NZuHrt4k3uQ" />
 
     </application>
 
