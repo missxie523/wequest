@@ -76,27 +76,27 @@ public class CommentActivity extends AppCompatActivity {
                 mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot eventSnapshot = dataSnapshot.child("events");
-                for (DataSnapshot noteDataSnapshot : eventSnapshot.getChildren()) {
-                    Event event = noteDataSnapshot.getValue(Event.class);
-                    if(event.getId().equals(eventId)) {
-                        commentAdapter.setEvent(event);
-                        break;
+                        DataSnapshot eventSnapshot = dataSnapshot.child("events");
+                        for (DataSnapshot noteDataSnapshot : eventSnapshot.getChildren()) {
+                            Event event = noteDataSnapshot.getValue(Event.class);
+                            if(event.getId().equals(eventId)) {
+                                commentAdapter.setEvent(event);
+                                break;
+                            }
+                        }
+                        if (mRecyclerView.getAdapter() != null) {
+                            commentAdapter.notifyDataSetChanged();
+                        } else {
+                            mRecyclerView.setAdapter(commentAdapter);
+                        }
                     }
-                }
-                if (mRecyclerView.getAdapter() != null) {
-                    commentAdapter.notifyDataSetChanged();
-                } else {
-                    mRecyclerView.setAdapter(commentAdapter);
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
+                    }
+                });
             }
-        });
-    }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 

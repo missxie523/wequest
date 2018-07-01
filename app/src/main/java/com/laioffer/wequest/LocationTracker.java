@@ -26,9 +26,7 @@ import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-/**
- * Created by xukek on 3/20/2018.
- */
+
 
 public class LocationTracker implements LocationListener {
     private final Activity mContext;

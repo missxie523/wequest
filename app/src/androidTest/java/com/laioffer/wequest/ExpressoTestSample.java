@@ -1,4 +1,4 @@
-package wequest;
+package com.laioffer.wequest;
 
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.filters.LargeTest;
@@ -47,7 +47,7 @@ public class ExpressoTestSample {
 
         //Type password
         onView(withId(R.id.editTextPassword)).perform(ViewActions.clearText()).
-                perform(ViewActions.typeText("2222"));
+                perform(ViewActions.typeText("1111"));
 
         //Send intent and check intent
         onView(withId(R.id.submit)).perform(ViewActions.click());

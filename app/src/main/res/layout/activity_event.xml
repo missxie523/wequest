@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:id="@+id/relativelayout_event"
         />
+
     <!-- add botton navigation view to the app-->
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

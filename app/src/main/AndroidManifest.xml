@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -31,21 +30,15 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize"></activity>
         <service
-            android:name="com.laioffer.wequest.MyFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
+            android:name=".MyFirebaseMessagingService"></service>
         <service
-            android:name="com.laioffer.wequest.MyFirebaseInstanceIDService">
+            android:name=".MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDg_-PSNyDGlGQd6Z-zSpK-NZuHrt4k3uQ" />
-
+            android:value="AIzaSyB0b9Q5X0WEz3NFKxPmopAND2t08Y8xaHI" />
     </application>
-
 </manifest>
