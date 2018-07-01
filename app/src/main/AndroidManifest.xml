@@ -39,6 +39,11 @@
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
+<<<<<<< HEAD
             android:value="AIzaSyB0b9Q5X0WEz3NFKxPmopAND2t08Y8xaHI" />
+=======
+            android:value="REPLACE WITH YOUR OWN APT_KEY" />
+
+>>>>>>> b718dc890fd4c82861b6dbd723666d29d36595e4
     </application>
 </manifest>
