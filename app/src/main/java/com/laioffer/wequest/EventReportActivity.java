@@ -25,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.laioffer.wequest.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,6 @@ public class EventReportActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private LocationTracker mLocationTracker;
-    //Set variables ready for picking images
     private static int RESULT_LOAD_IMAGE = 1;
     private ImageView img_event_picture;
     private Uri mImgUri;
@@ -50,9 +48,44 @@ public class EventReportActivity extends AppCompatActivity {
     private StorageReference storageRef;
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_report);
+
+        mLocationTracker = new LocationTracker(this);
+        mLocationTracker.getLocation();
+        final double latitude = mLocationTracker.getLatitude();
+        final double longitude = mLocationTracker.getLongitude();
+        new AsyncTask<Void, Void, Void>() {
+            private List<String> mAddressList = new ArrayList<String>();
+
+            @Override
+            protected Void doInBackground(Void... urls) {
+                mAddressList = mLocationTracker.getCurrentLocationViaJSON(latitude,longitude);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void input) {
+                if (mAddressList.size() >= 3) {
+                    mEditTextLocation.setText(mAddressList.get(0) + ", " + mAddressList.get(1) +
+                            ", " + mAddressList.get(2) + ", " + mAddressList.get(3));
+                }
+            }
+        }.execute();
 
         mEditTextLocation = (EditText) findViewById(R.id.edit_text_event_location);
         mEditTextTitle = (EditText) findViewById(R.id.edit_text_event_title);
@@ -61,7 +94,9 @@ public class EventReportActivity extends AppCompatActivity {
         mImageViewSend = (ImageView) findViewById(R.id.img_event_report);
         database = FirebaseDatabase.getInstance().getReference();
         img_event_picture = (ImageView) findViewById(R.id.img_event_picture_capture);
-        mAuth = FirebaseAuth.getInstance();
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         mImageViewSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,13 +105,23 @@ public class EventReportActivity extends AppCompatActivity {
                 if (mImgUri != null) {
                     uploadImage(key);
                     mImgUri = null;
-                    //self added
-                    img_event_picture.setImageURI(null);
                 }
+
+            }
+        });
+        mImageViewCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
 
-        //Add listener to check sign in status
+        mAuth = FirebaseAuth.getInstance();
+
+//Add listener to check sign in status
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -89,7 +134,7 @@ public class EventReportActivity extends AppCompatActivity {
             }
         };
 
-        //sign in anonymously
+//sign in anonymously
         mAuth.signInAnonymously().addOnCompleteListener(this,  new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -100,49 +145,45 @@ public class EventReportActivity extends AppCompatActivity {
             }
         });
 
-        mLocationTracker = new LocationTracker(this);
-        mLocationTracker.getLocation();
-        final double latitude = mLocationTracker.getLatitude();
-        final double longitude = mLocationTracker.getLongitude();
+    }
+    private String uploadEvent() {
+        String title = mEditTextTitle.getText().toString();
+        String location = mEditTextLocation.getText().toString();
+        String description = mEditTextContent.getText().toString();
+        if (location.equals("") || description.equals("") ||
+                title.equals("") || Utils.username == null) {
+            return null;
+        }
+        //create event instance
+        Event event = new Event();
+        event.setTitle(title);
+        event.setAddress(location);
+        event.setDescription(description);
+        event.setTime(System.currentTimeMillis());
+        event.setLatitude(mLocationTracker.getLatitude());
+        event.setLongitude(mLocationTracker.getLongitude());
 
-        new AsyncTask<Void, Void, Void>() {
-            private List<String> mAddressList = new ArrayList<String>();
-
+        event.setUsername(Utils.username);
+        String key = database.child("events").push().getKey();
+        event.setId(key);
+        database.child("events").child(key).setValue(event, new DatabaseReference.CompletionListener() {
             @Override
-            protected Void doInBackground(Void... urls) {
-                mAddressList = mLocationTracker.getCurrentLocationViaJSON(latitude,longitude);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void input) {
-                if (mAddressList.size() > 3) {
-                    mEditTextLocation.setText(mAddressList.get(0) + ", " + mAddressList.get(1) +
-                            ", " + mAddressList.get(2) + ", " + mAddressList.get(3));
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    Toast toast = Toast.makeText(getBaseContext(),
+                            "The event is failed, please check your network status.", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    Toast toast = Toast.makeText(getBaseContext(), "The event is reported", Toast.LENGTH_SHORT);
+                    toast.show();
+                    mEditTextTitle.setText("");
+                    mEditTextLocation.setText("");
+                    mEditTextContent.setText("");
                 }
             }
-        }.execute();
-
-
-
-        //Add click listener for the image to pick up images from gallery through implicit intent
-        mImageViewCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, RESULT_LOAD_IMAGE);
-            }
         });
-
-
-        //Initialize cloud storage
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+        return key;
     }
-
-
     /**
      * Send intent to launch gallery for us to pick up images, once the action finishes, images
      * will be returns as parameters in this function
@@ -164,23 +205,6 @@ public class EventReportActivity extends AppCompatActivity {
             ex.printStackTrace();
         }
     }
-
-    //Add authentification listener when activity starts
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    //Remove authentification listener when activity starts
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
     /**
      * Upload image picked up from gallery to Firebase Cloud storage
      * @param eventId eventId
@@ -212,41 +236,4 @@ public class EventReportActivity extends AppCompatActivity {
         });
     }
 
-    private String uploadEvent() {
-        String title = mEditTextTitle.getText().toString();
-        String location = mEditTextLocation.getText().toString();
-        String description = mEditTextContent.getText().toString();
-        if (location.equals("") || description.equals("") ||
-                title.equals("") || Utils.username == null) {
-            return null;
-        }
-        //create event instance
-        Event event = new Event();
-        event.setTitle(title);
-        event.setAddress(location);
-        event.setDescription(description);
-        event.setTime(System.currentTimeMillis());
-        event.setLatitude(mLocationTracker.getLatitude());
-        event.setLongitude(mLocationTracker.getLongitude());
-        event.setUsername(Utils.username);
-        String key = database.child("events").push().getKey();
-        event.setId(key);
-        database.child("events").child(key).setValue(event, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    Toast toast = Toast.makeText(getBaseContext(),
-                            "The event is failed, please check your network status.", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    Toast toast = Toast.makeText(getBaseContext(), "The event is reported", Toast.LENGTH_SHORT);
-                    toast.show();
-                    mEditTextTitle.setText("");
-                    mEditTextLocation.setText("");
-                    mEditTextContent.setText("");
-                }
-            }
-        });
-        return key;
-    }
 }

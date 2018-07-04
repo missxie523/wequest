@@ -15,7 +15,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.laioffer.wequest.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private DatabaseReference databaseReference;
     private LayoutInflater inflater;
-
     public CommentAdapter(Context context) {
         this.context = context;
         commentList = new ArrayList<>();
@@ -90,21 +88,19 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class CommentViewHolder extends RecyclerView.ViewHolder {
-        public View layout;
         public TextView commentUser;
-        public TextView commentTime;
         public TextView commentDescription;
-
+        public TextView commentTime;
+        public View layout;
 
         public CommentViewHolder(View v) {
             super(v);
             layout = v;
-            commentUser = (TextView)v.findViewById(R.id.comment_item_user);
-            commentTime = (TextView)v.findViewById(R.id.comment_item_time);
+            commentUser = (TextView) v.findViewById(R.id.comment_item_user);
             commentDescription = (TextView)v.findViewById(R.id.comment_item_description);
+            commentTime = (TextView)v.findViewById(R.id.comment_item_time);
         }
     }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
@@ -122,6 +118,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 break;
         }
         return viewHolder;
+    }
+
+    private void configureCommentView(final CommentViewHolder commentHolder, final int position) {
+        //Why is position - 1?
+        final Comment comment = commentList.get(position - 1);
+        commentHolder.commentUser.setText(comment.getCommenter());
+        commentHolder.commentDescription.setText(comment.getDescription());
+        commentHolder.commentTime.setText(Utils.timeTransformer(comment.getTime()));
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -194,11 +198,4 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    private void configureCommentView(final CommentViewHolder holder, final int position) {
-        int pos = position - 1;
-        Comment comment = commentList.get(pos);
-        holder.commentUser.setText(comment.getCommenter());
-        holder.commentDescription.setText(comment.getDescription());
-        holder.commentTime.setText(Utils.timeTransformer(comment.getTime()));
-    }
 }

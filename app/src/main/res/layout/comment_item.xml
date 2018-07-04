@@ -45,7 +45,7 @@
                 <TextView android:id="@+id/comment_item_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="San Francisco, CA"
+                    android:text="@string/woodstock_ga"
                     android:paddingRight="10dp"
                     android:textSize="16sp"
                     android:textColor="#939393"

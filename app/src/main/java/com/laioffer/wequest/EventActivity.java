@@ -7,24 +7,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.laioffer.wequest.R;
-
 public class EventActivity extends AppCompatActivity {
     private Fragment mEventsFragment;
     private Fragment mEventMapFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
-
         if (mEventsFragment == null) {
             mEventsFragment = new EventsFragment();
         }
 
         getSupportFragmentManager().beginTransaction().
                 add(R.id.relativelayout_event, mEventsFragment).commit();
-
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.navigation);
 
@@ -51,5 +46,6 @@ public class EventActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+
     }
 }

@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.laioffer.wequest.R;
 
 /**
  * Created by wenxie on 06/25/2018.

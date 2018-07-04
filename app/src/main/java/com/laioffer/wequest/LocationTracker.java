@@ -27,7 +27,6 @@ import java.util.List;
 import static android.content.Context.LOCATION_SERVICE;
 
 
-
 public class LocationTracker implements LocationListener {
     private final Activity mContext;
     private static final int PERMISSIONS_REQUEST_LOCATION = 99;
