@@ -72,7 +72,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         //Create Notification according to builder pattern
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(this, "WeQuest");
+        notificationBuilder
                         .setLargeIcon(Utils.getBitmapFromURL(remoteMessage.getData().get("imgUri")))
                         .setSmallIcon(R.drawable.icon)
                         .setContentTitle(remoteMessage.getData().get("title"))
